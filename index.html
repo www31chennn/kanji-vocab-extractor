@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>單自採集｜PDF 生詞整理</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;800&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+  :root{
+    --paper:#EDE7DA;
+    --card:#F8F4E9;
+    --ink:#262420;
+    --ink-soft:#6E6858;
+    --ink-faint:#9A9584;
+    --indigo:#33495A;
+    --indigo-soft:#5A7488;
+    --hanko:#A6402A;
+    --line:#D9CFB8;
+    --line-strong:#C2B698;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Noto Sans TC', sans-serif;
+    min-height:100vh;
+  }
+  .wrap{
+    max-width:920px;
+    margin:0 auto;
+    padding:48px 24px 80px;
+  }
+  header{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    border-bottom:2px solid var(--ink);
+    padding-bottom:18px;
+    margin-bottom:36px;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .title-block h1{
+    font-family:'Shippori Mincho', serif;
+    font-weight:800;
+    font-size:32px;
+    margin:0 0 6px;
+    letter-spacing:0.04em;
+  }
+  .title-block p{
+    margin:0;
+    font-size:13px;
+    color:var(--ink-soft);
+    letter-spacing:0.02em;
+  }
+  .stamp{
+    font-family:'Shippori Mincho', serif;
+    font-size:16px;
+    color:var(--hanko);
+    background:var(--card);
+    border:1.5px solid var(--hanko);
+    border-radius:50%;
+    width:34px;
+    height:34px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    flex-shrink:0;
+    transition:background .15s ease, color .15s ease;
+  }
+  .stamp:hover{ background:var(--hanko); color:var(--card); }
+
+  #dropzone{
+    border:1.5px dashed var(--line-strong);
+    border-radius:6px;
+    background:var(--card);
+    padding:48px 24px;
+    text-align:center;
+    cursor:pointer;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .history-bar{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:16px;
+  }
+  .history-chip{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    background:var(--card);
+    border:1px solid var(--line-strong);
+    border-radius:16px;
+    padding:5px 6px 5px 12px;
+    font-size:12px;
+    color:var(--ink-soft);
+  }
+  .history-chip .chip-name{
+    cursor:pointer;
+    max-width:160px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .history-chip .chip-name:hover{ color:var(--ink); }
+  .history-chip .chip-del{
+    background:none;
+    border:none;
+    cursor:pointer;
+    color:var(--ink-faint);
+    font-size:14px;
+    line-height:1;
+    padding:2px 5px;
+    border-radius:50%;
+  }
+  .history-chip .chip-del:hover{ background:var(--hanko); color:#fff; }
+  #dropzone.drag{
+    border-color:var(--hanko);
+    background:#F3E9DB;
+  }
+  #dropzone .icon{
+    font-size:28px;
+    color:var(--ink-faint);
+    margin-bottom:10px;
+  }
+  #dropzone .main-txt{
+    font-size:15px;
+    font-weight:500;
+    margin:0 0 4px;
+  }
+  #dropzone .sub-txt{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin:0;
+  }
+  #fileInput{ display:none; }
+
+  #status{
+    display:none;
+    margin-top:24px;
+    padding:16px 18px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:6px;
+    font-size:13.5px;
+    color:var(--ink-soft);
+    align-items:center;
+    gap:12px;
+  }
+  #status.show{ display:flex; }
+  .spinner{
+    width:14px; height:14px;
+    border-radius:50%;
+    border:2px solid var(--line-strong);
+    border-top-color:var(--hanko);
+    animation:spin .8s linear infinite;
+    flex-shrink:0;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  #errorBox{
+    display:none;
+    margin-top:24px;
+    padding:16px 18px;
+    background:#F6E8E3;
+    border:1px solid #D9A88F;
+    border-radius:6px;
+    color:#7A3620;
+    font-size:13.5px;
+    line-height:1.6;
+  }
+
+  #resultArea{ display:none; margin-top:40px; }
+  #resultArea.show{ display:block; }
+
+  .summary-bar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:14px;
+    margin-bottom:24px;
+    padding-bottom:14px;
+    border-bottom:1px solid var(--line);
+  }
+  .summary-bar .fname{
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+  .summary-bar .count{
+    font-family:'Shippori Mincho', serif;
+    font-size:15px;
+    color:var(--ink);
+  }
+  .summary-bar .actions{
+    display:flex;
+    gap:8px;
+  }
+  .btn{
+    font-family:'Noto Sans TC', sans-serif;
+    font-size:12.5px;
+    background:transparent;
+    border:1px solid var(--ink);
+    color:var(--ink);
+    padding:7px 14px;
+    border-radius:4px;
+    cursor:pointer;
+    transition:background .15s ease, color .15s ease;
+  }
+  .btn:hover{ background:var(--ink); color:var(--paper); }
+  .btn.subtle{ border-color:var(--line-strong); color:var(--ink-soft); }
+  .btn.subtle:hover{ background:var(--ink-soft); color:var(--paper); }
+
+  .cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(190px, 1fr));
+    gap:14px;
+  }
+  .vflip{
+    position:relative;
+    height:150px;
+    perspective:900px;
+    cursor:pointer;
+  }
+  .vflip .vinner{
+    position:relative;
+    width:100%;
+    height:100%;
+    transition:transform .5s cubic-bezier(.4,.2,.2,1);
+    transform-style:preserve-3d;
+  }
+  .vflip.flipped .vinner{ transform:rotateY(180deg); }
+  .vcard{
+    position:absolute;
+    inset:0;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:14px;
+    backface-visibility:hidden;
+    -webkit-backface-visibility:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+  .vcard.back{
+    transform:rotateY(180deg);
+    justify-content:center;
+  }
+  .vcard::before{
+    content:"";
+    position:absolute;
+    top:6px; left:6px; right:6px; bottom:6px;
+    border:1px dotted var(--line-strong);
+    border-radius:2px;
+    pointer-events:none;
+  }
+  .card-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    position:relative;
+    z-index:1;
+  }
+  .vcard .freq{
+    min-width:18px;
+    height:18px;
+    padding:0 5px;
+    border-radius:9px;
+    background:var(--hanko);
+    color:#F8ECE4;
+    font-size:10.5px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'Shippori Mincho', serif;
+  }
+  .vcard .tag{
+    font-size:10px;
+    color:var(--indigo-soft);
+    letter-spacing:0.05em;
+  }
+  .card-main{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    position:relative;
+    z-index:1;
+    padding:0 4px;
+  }
+  .vcard .reading{
+    font-size:11px;
+    color:var(--indigo-soft);
+    letter-spacing:0.06em;
+    margin:0 0 6px;
+  }
+  .vcard .word{
+    font-family:'Shippori Mincho', serif;
+    font-weight:600;
+    font-size:23px;
+    margin:0;
+    line-height:1.3;
+  }
+  .vcard .meaning{
+    font-size:12.5px;
+    color:var(--ink);
+    line-height:1.5;
+    margin:0;
+    position:relative;
+    z-index:1;
+  }
+  .vcard .ctx-label{
+    font-size:10px;
+    color:var(--ink-faint);
+    margin:0 0 4px;
+    position:relative;
+    z-index:1;
+  }
+  .vcard .ctx{
+    font-size:12px;
+    color:var(--ink-soft);
+    line-height:1.5;
+    margin:0 0 10px;
+    position:relative;
+    z-index:1;
+  }
+  .vcard .back-meaning{
+    font-size:13px;
+    color:var(--ink);
+    font-weight:500;
+    line-height:1.5;
+    margin:0;
+    position:relative;
+    z-index:1;
+  }
+  .flip-hint{
+    position:absolute;
+    bottom:6px;
+    right:8px;
+    font-size:9.5px;
+    color:var(--ink-faint);
+    z-index:1;
+  }
+
+  #rawTextDetails{
+    margin-top:28px;
+    font-size:12px;
+    color:var(--ink-faint);
+  }
+  #rawTextDetails summary{ cursor:pointer; color:var(--ink-soft); }
+  #rawTextDetails pre{
+    white-space:pre-wrap;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:14px;
+    max-height:240px;
+    overflow:auto;
+    margin-top:10px;
+    font-family:'Noto Sans TC', sans-serif;
+    font-size:12px;
+    color:var(--ink-soft);
+  }
+
+  @media (max-width: 480px){
+    .wrap{ padding:32px 16px 60px; }
+    .title-block h1{ font-size:24px; }
+    .title-block p{ font-size:12px; }
+    #dropzone{ padding:32px 16px; }
+    .cards{ grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:10px; }
+    .vflip{ height:135px; }
+    .vcard .word{ font-size:20px; }
+    .summary-bar .actions{ width:100%; }
+    .summary-bar .actions .btn{ flex:1; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="title-block">
+      <h1>單字採集</h1>
+      <p>上傳 PDF，自動採集其中的漢字生詞，附讀音與中文釋義</p>
+    </div>
+    <button id="settingsBtn" class="stamp" title="設定">⚙</button>
+  </header>
+
+  <div id="apiKeyBox" style="display:none; margin-bottom:20px; padding:14px 16px; background:var(--card); border:1px solid var(--line); border-radius:6px;">
+    <label for="apiKeyInput" style="display:block; font-size:12.5px; color:var(--ink-soft); margin-bottom:6px;">
+      Gemini API 金鑰 — 免費申請：
+      <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" style="color:var(--indigo);">aistudio.google.com/apikey</a>
+    </label>
+    <div style="display:flex; gap:8px;">
+      <div style="position:relative; flex:1;">
+        <input type="password" id="apiKeyInput" placeholder="貼上你的 Gemini API 金鑰" style="width:100%; padding:8px 34px 8px 10px; border:1px solid var(--line-strong); border-radius:4px; font-size:13px; background:#fff;">
+        <button type="button" id="toggleKeyBtn" title="顯示/隱藏金鑰" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-size:14px; color:var(--ink-faint); padding:2px;">👁</button>
+      </div>
+      <button class="btn subtle" id="saveKeyBtn" style="white-space:nowrap;">儲存</button>
+    </div>
+    <p id="keyStatus" style="margin:8px 0 0; font-size:11.5px; color:var(--ink-faint);"></p>
+    <hr style="border:none; border-top:1px solid var(--line); margin:12px 0;">
+    <button class="btn subtle" id="clearHistoryBtn" style="font-size:11.5px;">清除所有已儲存的生詞紀錄</button>
+  </div>
+
+  <div id="historyBar" class="history-bar" style="display:none;"></div>
+
+  <div id="dropzone">
+    <div class="icon">⇪</div>
+    <p class="main-txt">點擊或拖曳 PDF 檔案到這裡</p>
+    <p class="sub-txt">歌詞、文章、教材皆可，僅支援 .pdf</p>
+    <input type="file" id="fileInput" accept="application/pdf">
+  </div>
+
+  <div id="status">
+    <div class="spinner"></div>
+    <span id="statusText">處理中…</span>
+  </div>
+
+  <div id="errorBox"></div>
+
+  <div id="resultArea">
+    <div class="summary-bar">
+      <div>
+        <div class="fname" id="fname"></div>
+        <div class="count" id="wordCount"></div>
+      </div>
+      <div class="actions">
+        <button class="btn subtle" id="copyBtn">複製清單</button>
+        <button class="btn" id="downloadBtn">下載檔案</button>
+      </div>
+    </div>
+    <div class="cards" id="cards"></div>
+    <details id="rawTextDetails">
+      <summary>查看擷取的原始文字</summary>
+      <pre id="rawText"></pre>
+    </details>
+  </div>
+</div>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+const statusBox = document.getElementById('status');
+const statusText = document.getElementById('statusText');
+const errorBox = document.getElementById('errorBox');
+const resultArea = document.getElementById('resultArea');
+const cardsEl = document.getElementById('cards');
+const fnameEl = document.getElementById('fname');
+const wordCountEl = document.getElementById('wordCount');
+const rawTextEl = document.getElementById('rawText');
+const copyBtn = document.getElementById('copyBtn');
+const downloadBtn = document.getElementById('downloadBtn');
+
+let currentVocab = [];
+
+const apiKeyInput = document.getElementById('apiKeyInput');
+const saveKeyBtn = document.getElementById('saveKeyBtn');
+const keyStatus = document.getElementById('keyStatus');
+const settingsBtn = document.getElementById('settingsBtn');
+const apiKeyBox = document.getElementById('apiKeyBox');
+const toggleKeyBtn = document.getElementById('toggleKeyBtn');
+
+const FIXED_MODEL = 'gemini-3.6-flash';
+
+function loadKey(){
+  const saved = localStorage.getItem('gemini_api_key');
+  if (saved){
+    apiKeyInput.value = saved;
+    keyStatus.textContent = '已儲存金鑰。';
+  }
+}
+function getKey(){
+  return localStorage.getItem('gemini_api_key') || '';
+}
+function getModel(){
+  return FIXED_MODEL;
+}
+saveKeyBtn.addEventListener('click', () => {
+  const v = apiKeyInput.value.trim();
+  if (!v){
+    keyStatus.textContent = '請先貼上金鑰。';
+    return;
+  }
+  localStorage.setItem('gemini_api_key', v);
+  keyStatus.textContent = '已儲存金鑰。';
+});
+settingsBtn.addEventListener('click', () => {
+  apiKeyBox.style.display = apiKeyBox.style.display === 'none' ? 'block' : 'none';
+});
+toggleKeyBtn.addEventListener('click', () => {
+  const showing = apiKeyInput.type === 'text';
+  apiKeyInput.type = showing ? 'password' : 'text';
+  toggleKeyBtn.textContent = showing ? '👁' : '🙈';
+});
+loadKey();
+
+const DECK_KEY = 'kanji_vocab_decks';
+const historyBar = document.getElementById('historyBar');
+
+function loadDecks(){
+  try{ return JSON.parse(localStorage.getItem(DECK_KEY) || '[]'); }
+  catch(e){ return []; }
+}
+function saveDecks(decks){
+  try{ localStorage.setItem(DECK_KEY, JSON.stringify(decks)); }
+  catch(e){ /* storage full or unavailable, ignore */ }
+}
+function saveCurrentDeck(filename, vocab){
+  let decks = loadDecks().filter(d => d.filename !== filename);
+  decks.unshift({ filename, vocab, savedAt: Date.now() });
+  if (decks.length > 20) decks = decks.slice(0, 20);
+  saveDecks(decks);
+  renderHistoryBar();
+}
+function renderHistoryBar(){
+  const decks = loadDecks();
+  historyBar.innerHTML = '';
+  if (!decks.length){ historyBar.style.display = 'none'; return; }
+  historyBar.style.display = 'flex';
+  decks.forEach(d => {
+    const chip = document.createElement('div');
+    chip.className = 'history-chip';
+    chip.innerHTML = `<span class="chip-name" title="${escapeHtml(d.filename)}">${escapeHtml(d.filename)}</span><button class="chip-del" title="刪除這份紀錄">×</button>`;
+    chip.querySelector('.chip-name').addEventListener('click', () => {
+      currentVocab = d.vocab;
+      renderResults(d.filename, d.vocab);
+      errorBox.style.display = 'none';
+    });
+    chip.querySelector('.chip-del').addEventListener('click', (e) => {
+      e.stopPropagation();
+      saveDecks(loadDecks().filter(x => x.filename !== d.filename));
+      renderHistoryBar();
+    });
+    historyBar.appendChild(chip);
+  });
+}
+renderHistoryBar();
+const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+clearHistoryBtn.addEventListener('click', () => {
+  saveDecks([]);
+  renderHistoryBar();
+  resultArea.classList.remove('show');
+  currentVocab = [];
+});
+// 自動還原上次分析結果，重新整理頁面不會遺失
+const savedDecks = loadDecks();
+if (savedDecks.length){
+  currentVocab = savedDecks[0].vocab;
+  renderResults(savedDecks[0].filename, savedDecks[0].vocab);
+}
+
+dropzone.addEventListener('click', () => fileInput.click());
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag'));
+dropzone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropzone.classList.remove('drag');
+  if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', () => {
+  if (fileInput.files.length) handleFile(fileInput.files[0]);
+});
+downloadBtn.addEventListener('click', () => {
+  const text = currentVocab.map(v => `${v.word}（${v.reading}） - ${v.meaning}　【${v.context || ''}】`).join('\n');
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const baseName = (fnameEl.textContent || '生詞清單').replace(/\.pdf$/i, '');
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${baseName}_生詞.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+copyBtn.addEventListener('click', () => {
+  const text = currentVocab.map(v => `${v.word}（${v.reading}） - ${v.meaning}`).join('\n');
+  navigator.clipboard.writeText(text).then(() => {
+    copyBtn.textContent = '已複製';
+    setTimeout(() => copyBtn.textContent = '複製清單', 1500);
+  });
+});
+
+function showStatus(msg){
+  statusBox.classList.add('show');
+  statusText.textContent = msg;
+}
+function hideStatus(){
+  statusBox.classList.remove('show');
+}
+function showError(msg){
+  errorBox.style.display = 'block';
+  errorBox.textContent = msg;
+}
+
+async function handleFile(file){
+  errorBox.style.display = 'none';
+  resultArea.classList.remove('show');
+  if (!getKey()){
+    apiKeyBox.style.display = 'block';
+    showError('請先點右上角的設定圖示，貼上並儲存你的 Gemini API 金鑰。');
+    return;
+  }
+  if (file.type !== 'application/pdf'){
+    showError('請上傳 PDF 檔案。');
+    return;
+  }
+  try{
+    showStatus('正在讀取 PDF 內容…');
+    const buf = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+
+    const pagesItems = [];
+    const allSizes = [];
+    for (let i = 1; i <= pdf.numPages; i++){
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      pagesItems.push(content.items);
+      content.items.forEach(it => {
+        const size = Math.abs(it.transform && it.transform[3] ? it.transform[3] : 0);
+        if (size > 0.1) allSizes.push(Math.round(size * 10) / 10);
+      });
+    }
+
+    const freq = {};
+    allSizes.forEach(s => { freq[s] = (freq[s] || 0) + 1; });
+    let mainSize = 0, maxCount = 0;
+    Object.keys(freq).forEach(k => {
+      if (freq[k] > maxCount){ maxCount = freq[k]; mainSize = parseFloat(k); }
+    });
+    const sizeThreshold = mainSize * 0.75;
+
+    let fullText = '';
+    pagesItems.forEach(items => {
+      const kept = items.filter(it => {
+        const size = Math.abs(it.transform && it.transform[3] ? it.transform[3] : 0);
+        return !mainSize || size >= sizeThreshold;
+      });
+      let pageText = '';
+      let prevY = null;
+      kept.forEach(it => {
+        const y = it.transform && it.transform[5] !== undefined ? it.transform[5] : null;
+        const isNewLine = prevY !== null && y !== null && Math.abs(y - prevY) > (mainSize ? mainSize * 0.5 : 5);
+        if (isNewLine){
+          pageText += '\n';
+        } else if (pageText && !pageText.endsWith('\n')){
+          pageText += ' ';
+        }
+        pageText += it.str;
+        if (y !== null) prevY = y;
+      });
+      fullText += pageText + '\n';
+    });
+    fullText = fullText.trim();
+
+    if (!fullText){
+      showError('無法從此 PDF 擷取到文字內容，可能是掃描圖片檔。');
+      hideStatus();
+      return;
+    }
+    rawTextEl.textContent = fullText;
+
+    showStatus('正在分析漢字生詞…');
+    const vocab = await analyzeVocab(fullText);
+    hideStatus();
+
+    if (!vocab.length){
+      showError('沒有偵測到含漢字的單字。');
+      return;
+    }
+
+    currentVocab = vocab;
+    renderResults(file.name, vocab);
+    saveCurrentDeck(file.name, vocab);
+  }catch(err){
+    hideStatus();
+    showError('處理失敗：' + err.message);
+  }
+}
+
+async function analyzeVocab(text){
+  const trimmed = text.length > 8000 ? text.slice(0, 8000) : text;
+  const prompt = `以下是從一份 PDF 擷取出來的日文文字（可能夾雜混亂排版或假名讀音注音）：
+
+"""
+${trimmed}
+"""
+
+請找出當中所有值得學習的單字，包含：
+1. 所有包含至少一個漢字的單字
+2. 所有片假名單字（外來語等，不含漢字也要列出）
+
+嚴格規則（非常重要）：
+- word 欄位必須是該詞「在原文中實際出現的完整寫法」，動詞、形容詞等有活用語尾（送り仮名）的詞，一定要連同語尾一起保留，絕對不可以只截取漢字語幹。
+  正確範例：氣付けば → word 應為 "気付けば" 或至少 "気付く"；不可只寫 "気付"。
+  正確範例：話そうと思ってた → word 應為 "話そう" 或至少 "話す"；不可只寫 "話"。
+  正確範例：合わないね → word 應為 "合わない" 或至少 "合う"；不可只寫 "合"。
+- 不要把單一個字的假名注音（ふりがな）誤判成單字本身。
+- 去除重複的詞。
+- 「依照在原文中第一次出現的先後順序」排列成 JSON 陣列（不要按照50音或其他方式重新排序）。
+
+每個項目格式如下：
+{"word": "該詞在原文中實際出現的完整寫法（含送り仮名）", "reading": "平假名讀音（若本身是片假名詞則填該片假名）", "meaning": "繁體中文釋義（簡短，5-12字）", "context": "原文中以換行符號分隔的那「一行」，只能是該詞所在的那一行本身，不可以跨行合併、不可以包含前後其他行（含漢字/假名，不要翻譯）", "count": 該詞在文中出現的次數}`;
+
+  const key = getKey();
+  const model = getModel();
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-goog-api-key": key
+    },
+    body: JSON.stringify({
+      contents: [{ role: "user", parts: [{ text: prompt }] }],
+      generationConfig: {
+        temperature: 0,
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: "ARRAY",
+          items: {
+            type: "OBJECT",
+            properties: {
+              word: { type: "STRING" },
+              reading: { type: "STRING" },
+              meaning: { type: "STRING" },
+              context: { type: "STRING" },
+              count: { type: "INTEGER" }
+            },
+            required: ["word", "reading", "meaning", "context"]
+          }
+        }
+      }
+    })
+  });
+
+  if (!response.ok){
+    const errData = await response.json().catch(() => null);
+    const msg = errData && errData.error && errData.error.message ? errData.error.message : `HTTP ${response.status}`;
+    throw new Error('Gemini API 錯誤：' + msg);
+  }
+
+  const data = await response.json();
+  const cand = data.candidates && data.candidates[0];
+  const textOut = cand && cand.content && cand.content.parts
+    ? cand.content.parts.map(p => p.text || '').join('')
+    : '';
+  if (!textOut) throw new Error('Gemini 未回傳內容，請重試。');
+
+  let parsed;
+  try{
+    parsed = JSON.parse(textOut);
+  }catch(e){
+    const match = textOut.match(/\[[\s\S]*\]/);
+    if (match) parsed = JSON.parse(match[0]);
+    else throw new Error('無法解析分析結果，請重試。');
+  }
+  if (!Array.isArray(parsed)) throw new Error('分析結果格式錯誤。');
+  return parsed.filter(v => v && v.word);
+}
+
+function renderResults(filename, vocab){
+  fnameEl.textContent = filename;
+  wordCountEl.textContent = `共採集到 ${vocab.length} 個生詞（依出現順序排列，點卡片可翻面）`;
+  cardsEl.innerHTML = '';
+  vocab.forEach(v => {
+    const hasKanji = /[\u4E00-\u9FFF]/.test(v.word || '');
+    const tag = hasKanji ? '漢' : '外來語';
+    const showReading = v.reading && v.reading !== v.word;
+    const freq = v.count && v.count > 1;
+
+    const flip = document.createElement('div');
+    flip.className = 'vflip';
+    flip.innerHTML = `
+      <div class="vinner">
+        <div class="vcard front">
+          <div class="card-top">
+            <span class="tag">${tag}</span>
+            ${freq ? `<span class="freq">${v.count}</span>` : ''}
+          </div>
+          <div class="card-main">
+            ${showReading ? `<p class="reading">${escapeHtml(v.reading)}</p>` : ''}
+            <p class="word">${escapeHtml(v.word || '')}</p>
+          </div>
+          <span class="flip-hint">點擊翻面 ↻</span>
+        </div>
+        <div class="vcard back">
+          <p class="ctx-label">出自：</p>
+          <p class="ctx">${escapeHtml(v.context || '（無)')}</p>
+          <p class="back-meaning">${escapeHtml(v.meaning || '')}</p>
+        </div>
+      </div>
+    `;
+    flip.addEventListener('click', () => flip.classList.toggle('flipped'));
+    cardsEl.appendChild(flip);
+  });
+  resultArea.classList.add('show');
+}
+
+function escapeHtml(s){
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+</script>
+</body>
+</html>
