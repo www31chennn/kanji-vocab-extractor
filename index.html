@@ -225,17 +225,15 @@
   .vflip{
     position:relative;
     height:150px;
-    perspective:900px;
     cursor:pointer;
   }
   .vflip .vinner{
     position:relative;
     width:100%;
     height:100%;
-    transition:transform .5s cubic-bezier(.4,.2,.2,1);
-    transform-style:preserve-3d;
+    transition:transform .16s ease;
   }
-  .vflip.flipped .vinner{ transform:rotateY(180deg); }
+  .vflip .vinner.squeeze{ transform:scaleX(0.02); }
   .vcard{
     position:absolute;
     inset:0;
@@ -243,13 +241,11 @@
     border:1px solid var(--line);
     border-radius:3px;
     padding:14px;
-    backface-visibility:hidden;
-    -webkit-backface-visibility:hidden;
-    display:flex;
+    display:none;
     flex-direction:column;
   }
+  .vcard.active{ display:flex; }
   .vcard.back{
-    transform:rotateY(180deg);
     justify-content:center;
   }
   .vcard::before{
@@ -387,7 +383,7 @@
 <div class="wrap">
   <header>
     <div class="title-block">
-      <h1>單字採集</h1>
+      <h1>單自採集</h1>
       <p>上傳 PDF，自動採集其中的漢字生詞，附讀音與中文釋義</p>
     </div>
     <button id="settingsBtn" class="stamp" title="設定">⚙</button>
@@ -784,7 +780,7 @@ function renderResults(filename, vocab){
     flip.className = 'vflip';
     flip.innerHTML = `
       <div class="vinner">
-        <div class="vcard front">
+        <div class="vcard front active">
           <div class="card-top">
             <span class="tag">${tag}</span>
             ${freq ? `<span class="freq">${v.count}</span>` : ''}
@@ -802,7 +798,17 @@ function renderResults(filename, vocab){
         </div>
       </div>
     `;
-    flip.addEventListener('click', () => flip.classList.toggle('flipped'));
+    flip.addEventListener('click', () => {
+      const inner = flip.querySelector('.vinner');
+      const frontEl = flip.querySelector('.vcard.front');
+      const backEl = flip.querySelector('.vcard.back');
+      inner.classList.add('squeeze');
+      setTimeout(() => {
+        frontEl.classList.toggle('active');
+        backEl.classList.toggle('active');
+        inner.classList.remove('squeeze');
+      }, 160);
+    });
     cardsEl.appendChild(flip);
   });
   resultArea.classList.add('show');
