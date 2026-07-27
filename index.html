@@ -1,9 +1,10 @@
 <!DOCTYPE html>
+
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>單自採集｜PDF 生詞整理</title>
+<title>漢字採集所｜PDF 生詞整理</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;800&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
@@ -75,315 +76,316 @@
   }
   .stamp:hover{ background:var(--hanko); color:var(--card); }
 
-  #dropzone{
-    border:1.5px dashed var(--line-strong);
-    border-radius:6px;
-    background:var(--card);
-    padding:48px 24px;
-    text-align:center;
-    cursor:pointer;
-    transition:border-color .15s ease, background .15s ease;
-  }
-  .history-bar{
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-    margin-bottom:16px;
-  }
-  .history-chip{
-    display:flex;
-    align-items:center;
-    gap:6px;
-    background:var(--card);
-    border:1px solid var(--line-strong);
-    border-radius:16px;
-    padding:5px 6px 5px 12px;
-    font-size:12px;
-    color:var(--ink-soft);
-  }
-  .history-chip .chip-name{
-    cursor:pointer;
-    max-width:160px;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-  }
-  .history-chip .chip-name:hover{ color:var(--ink); }
-  .history-chip .chip-del{
-    background:none;
-    border:none;
-    cursor:pointer;
-    color:var(--ink-faint);
-    font-size:14px;
-    line-height:1;
-    padding:2px 5px;
-    border-radius:50%;
-  }
-  .history-chip .chip-del:hover{ background:var(--hanko); color:#fff; }
-  #dropzone.drag{
-    border-color:var(--hanko);
-    background:#F3E9DB;
-  }
-  #dropzone .icon{
-    font-size:28px;
-    color:var(--ink-faint);
-    margin-bottom:10px;
-  }
-  #dropzone .main-txt{
-    font-size:15px;
-    font-weight:500;
-    margin:0 0 4px;
-  }
-  #dropzone .sub-txt{
-    font-size:12.5px;
-    color:var(--ink-soft);
-    margin:0;
-  }
-  #fileInput{ display:none; }
+#dropzone{
+border:1.5px dashed var(–line-strong);
+border-radius:6px;
+background:var(–card);
+padding:48px 24px;
+text-align:center;
+cursor:pointer;
+transition:border-color .15s ease, background .15s ease;
+}
+.history-bar{
+display:flex;
+flex-wrap:wrap;
+gap:8px;
+margin-bottom:16px;
+}
+.history-chip{
+display:flex;
+align-items:center;
+gap:6px;
+background:var(–card);
+border:1px solid var(–line-strong);
+border-radius:16px;
+padding:5px 6px 5px 12px;
+font-size:12px;
+color:var(–ink-soft);
+}
+.history-chip .chip-name{
+cursor:pointer;
+max-width:160px;
+overflow:hidden;
+text-overflow:ellipsis;
+white-space:nowrap;
+}
+.history-chip .chip-name:hover{ color:var(–ink); }
+.history-chip .chip-del{
+background:none;
+border:none;
+cursor:pointer;
+color:var(–ink-faint);
+font-size:14px;
+line-height:1;
+padding:2px 5px;
+border-radius:50%;
+}
+.history-chip .chip-del:hover{ background:var(–hanko); color:#fff; }
+#dropzone.drag{
+border-color:var(–hanko);
+background:#F3E9DB;
+}
+#dropzone .icon{
+font-size:28px;
+color:var(–ink-faint);
+margin-bottom:10px;
+}
+#dropzone .main-txt{
+font-size:15px;
+font-weight:500;
+margin:0 0 4px;
+}
+#dropzone .sub-txt{
+font-size:12.5px;
+color:var(–ink-soft);
+margin:0;
+}
+#fileInput{ display:none; }
 
-  #status{
-    display:none;
-    margin-top:24px;
-    padding:16px 18px;
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:6px;
-    font-size:13.5px;
-    color:var(--ink-soft);
-    align-items:center;
-    gap:12px;
-  }
-  #status.show{ display:flex; }
-  .spinner{
-    width:14px; height:14px;
-    border-radius:50%;
-    border:2px solid var(--line-strong);
-    border-top-color:var(--hanko);
-    animation:spin .8s linear infinite;
-    flex-shrink:0;
-  }
-  @keyframes spin{ to{ transform:rotate(360deg); } }
+#status{
+display:none;
+margin-top:24px;
+padding:16px 18px;
+background:var(–card);
+border:1px solid var(–line);
+border-radius:6px;
+font-size:13.5px;
+color:var(–ink-soft);
+align-items:center;
+gap:12px;
+}
+#status.show{ display:flex; }
+.spinner{
+width:14px; height:14px;
+border-radius:50%;
+border:2px solid var(–line-strong);
+border-top-color:var(–hanko);
+animation:spin .8s linear infinite;
+flex-shrink:0;
+}
+@keyframes spin{ to{ transform:rotate(360deg); } }
 
-  #errorBox{
-    display:none;
-    margin-top:24px;
-    padding:16px 18px;
-    background:#F6E8E3;
-    border:1px solid #D9A88F;
-    border-radius:6px;
-    color:#7A3620;
-    font-size:13.5px;
-    line-height:1.6;
-  }
+#errorBox{
+display:none;
+margin-top:24px;
+padding:16px 18px;
+background:#F6E8E3;
+border:1px solid #D9A88F;
+border-radius:6px;
+color:#7A3620;
+font-size:13.5px;
+line-height:1.6;
+}
 
-  #resultArea{ display:none; margin-top:40px; }
-  #resultArea.show{ display:block; }
+#resultArea{ display:none; margin-top:40px; }
+#resultArea.show{ display:block; }
 
-  .summary-bar{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    flex-wrap:wrap;
-    gap:14px;
-    margin-bottom:24px;
-    padding-bottom:14px;
-    border-bottom:1px solid var(--line);
-  }
-  .summary-bar .fname{
-    font-size:13px;
-    color:var(--ink-soft);
-  }
-  .summary-bar .count{
-    font-family:'Shippori Mincho', serif;
-    font-size:15px;
-    color:var(--ink);
-  }
-  .summary-bar .actions{
-    display:flex;
-    gap:8px;
-  }
-  .btn{
-    font-family:'Noto Sans TC', sans-serif;
-    font-size:12.5px;
-    background:transparent;
-    border:1px solid var(--ink);
-    color:var(--ink);
-    padding:7px 14px;
-    border-radius:4px;
-    cursor:pointer;
-    transition:background .15s ease, color .15s ease;
-  }
-  .btn:hover{ background:var(--ink); color:var(--paper); }
-  .btn.subtle{ border-color:var(--line-strong); color:var(--ink-soft); }
-  .btn.subtle:hover{ background:var(--ink-soft); color:var(--paper); }
+.summary-bar{
+display:flex;
+align-items:center;
+justify-content:space-between;
+flex-wrap:wrap;
+gap:14px;
+margin-bottom:24px;
+padding-bottom:14px;
+border-bottom:1px solid var(–line);
+}
+.summary-bar .fname{
+font-size:13px;
+color:var(–ink-soft);
+}
+.summary-bar .count{
+font-family:‘Shippori Mincho’, serif;
+font-size:15px;
+color:var(–ink);
+}
+.summary-bar .actions{
+display:flex;
+gap:8px;
+}
+.btn{
+font-family:‘Noto Sans TC’, sans-serif;
+font-size:12.5px;
+background:transparent;
+border:1px solid var(–ink);
+color:var(–ink);
+padding:7px 14px;
+border-radius:4px;
+cursor:pointer;
+transition:background .15s ease, color .15s ease;
+}
+.btn:hover{ background:var(–ink); color:var(–paper); }
+.btn.subtle{ border-color:var(–line-strong); color:var(–ink-soft); }
+.btn.subtle:hover{ background:var(–ink-soft); color:var(–paper); }
 
-  .cards{
-    display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(190px, 1fr));
-    gap:14px;
-  }
-  .vflip{
-    position:relative;
-    height:150px;
-    cursor:pointer;
-  }
-  .vflip .vinner{
-    position:relative;
-    width:100%;
-    height:100%;
-    transition:transform .16s ease;
-  }
-  .vflip .vinner.squeeze{ transform:scaleX(0.02); }
-  .vcard{
-    position:absolute;
-    inset:0;
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:3px;
-    padding:14px;
-    display:none;
-    flex-direction:column;
-  }
-  .vcard.active{ display:flex; }
-  .vcard.back{
-    justify-content:center;
-  }
-  .vcard::before{
-    content:"";
-    position:absolute;
-    top:6px; left:6px; right:6px; bottom:6px;
-    border:1px dotted var(--line-strong);
-    border-radius:2px;
-    pointer-events:none;
-  }
-  .card-top{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    position:relative;
-    z-index:1;
-  }
-  .vcard .freq{
-    min-width:18px;
-    height:18px;
-    padding:0 5px;
-    border-radius:9px;
-    background:var(--hanko);
-    color:#F8ECE4;
-    font-size:10.5px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-family:'Shippori Mincho', serif;
-  }
-  .vcard .tag{
-    font-size:10px;
-    color:var(--indigo-soft);
-    letter-spacing:0.05em;
-  }
-  .card-main{
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    position:relative;
-    z-index:1;
-    padding:0 4px;
-  }
-  .vcard .reading{
-    font-size:11px;
-    color:var(--indigo-soft);
-    letter-spacing:0.06em;
-    margin:0 0 6px;
-  }
-  .vcard .word{
-    font-family:'Shippori Mincho', serif;
-    font-weight:600;
-    font-size:23px;
-    margin:0;
-    line-height:1.3;
-  }
-  .vcard .meaning{
-    font-size:12.5px;
-    color:var(--ink);
-    line-height:1.5;
-    margin:0;
-    position:relative;
-    z-index:1;
-  }
-  .vcard .ctx-label{
-    font-size:10px;
-    color:var(--ink-faint);
-    margin:0 0 4px;
-    position:relative;
-    z-index:1;
-  }
-  .vcard .ctx{
-    font-size:12px;
-    color:var(--ink-soft);
-    line-height:1.5;
-    margin:0 0 10px;
-    position:relative;
-    z-index:1;
-  }
-  .vcard .back-meaning{
-    font-size:13px;
-    color:var(--ink);
-    font-weight:500;
-    line-height:1.5;
-    margin:0;
-    position:relative;
-    z-index:1;
-  }
-  .flip-hint{
-    position:absolute;
-    bottom:6px;
-    right:8px;
-    font-size:9.5px;
-    color:var(--ink-faint);
-    z-index:1;
-  }
+.cards{
+display:grid;
+grid-template-columns:repeat(auto-fill, minmax(190px, 1fr));
+gap:14px;
+}
+.vflip{
+position:relative;
+height:150px;
+cursor:pointer;
+}
+.vflip .vinner{
+position:relative;
+width:100%;
+height:100%;
+transition:transform .16s ease;
+}
+.vflip .vinner.squeeze{ transform:scaleX(0.02); }
+.vcard{
+position:absolute;
+inset:0;
+background:var(–card);
+border:1px solid var(–line);
+border-radius:3px;
+padding:14px;
+display:none;
+flex-direction:column;
+}
+.vcard.active{ display:flex; }
+.vcard.back{
+justify-content:center;
+}
+.vcard::before{
+content:””;
+position:absolute;
+top:6px; left:6px; right:6px; bottom:6px;
+border:1px dotted var(–line-strong);
+border-radius:2px;
+pointer-events:none;
+}
+.card-top{
+display:flex;
+align-items:center;
+justify-content:space-between;
+position:relative;
+z-index:1;
+}
+.vcard .freq{
+min-width:18px;
+height:18px;
+padding:0 5px;
+border-radius:9px;
+background:var(–hanko);
+color:#F8ECE4;
+font-size:10.5px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-family:‘Shippori Mincho’, serif;
+}
+.vcard .tag{
+font-size:10px;
+color:var(–indigo-soft);
+letter-spacing:0.05em;
+}
+.card-main{
+flex:1;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+text-align:center;
+position:relative;
+z-index:1;
+padding:0 4px;
+}
+.vcard .reading{
+font-size:11px;
+color:var(–indigo-soft);
+letter-spacing:0.06em;
+margin:0 0 6px;
+}
+.vcard .word{
+font-family:‘Shippori Mincho’, serif;
+font-weight:600;
+font-size:23px;
+margin:0;
+line-height:1.3;
+}
+.vcard .meaning{
+font-size:12.5px;
+color:var(–ink);
+line-height:1.5;
+margin:0;
+position:relative;
+z-index:1;
+}
+.vcard .ctx-label{
+font-size:10px;
+color:var(–ink-faint);
+margin:0 0 4px;
+position:relative;
+z-index:1;
+}
+.vcard .ctx{
+font-size:12px;
+color:var(–ink-soft);
+line-height:1.5;
+margin:0 0 10px;
+position:relative;
+z-index:1;
+}
+.vcard .back-meaning{
+font-size:13px;
+color:var(–ink);
+font-weight:500;
+line-height:1.5;
+margin:0;
+position:relative;
+z-index:1;
+}
+.flip-hint{
+position:absolute;
+bottom:6px;
+right:8px;
+font-size:9.5px;
+color:var(–ink-faint);
+z-index:1;
+}
 
-  #rawTextDetails{
-    margin-top:28px;
-    font-size:12px;
-    color:var(--ink-faint);
-  }
-  #rawTextDetails summary{ cursor:pointer; color:var(--ink-soft); }
-  #rawTextDetails pre{
-    white-space:pre-wrap;
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:6px;
-    padding:14px;
-    max-height:240px;
-    overflow:auto;
-    margin-top:10px;
-    font-family:'Noto Sans TC', sans-serif;
-    font-size:12px;
-    color:var(--ink-soft);
-  }
+#rawTextDetails{
+margin-top:28px;
+font-size:12px;
+color:var(–ink-faint);
+}
+#rawTextDetails summary{ cursor:pointer; color:var(–ink-soft); }
+#rawTextDetails pre{
+white-space:pre-wrap;
+background:var(–card);
+border:1px solid var(–line);
+border-radius:6px;
+padding:14px;
+max-height:240px;
+overflow:auto;
+margin-top:10px;
+font-family:‘Noto Sans TC’, sans-serif;
+font-size:12px;
+color:var(–ink-soft);
+}
 
-  @media (max-width: 480px){
-    .wrap{ padding:32px 16px 60px; }
-    .title-block h1{ font-size:24px; }
-    .title-block p{ font-size:12px; }
-    #dropzone{ padding:32px 16px; }
-    .cards{ grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:10px; }
-    .vflip{ height:135px; }
-    .vcard .word{ font-size:20px; }
-    .summary-bar .actions{ width:100%; }
-    .summary-bar .actions .btn{ flex:1; }
-  }
+@media (max-width: 480px){
+.wrap{ padding:32px 16px 60px; }
+.title-block h1{ font-size:24px; }
+.title-block p{ font-size:12px; }
+#dropzone{ padding:32px 16px; }
+.cards{ grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:10px; }
+.vflip{ height:135px; }
+.vcard .word{ font-size:20px; }
+.summary-bar .actions{ width:100%; }
+.summary-bar .actions .btn{ flex:1; }
+}
 </style>
+
 </head>
 <body>
 <div class="wrap">
   <header>
     <div class="title-block">
-      <h1>單自採集</h1>
+      <h1>漢字採集所</h1>
       <p>上傳 PDF，自動採集其中的漢字生詞，附讀音與中文釋義</p>
     </div>
     <button id="settingsBtn" class="stamp" title="設定">⚙</button>
@@ -391,7 +393,7 @@
 
   <div id="apiKeyBox" style="display:none; margin-bottom:20px; padding:14px 16px; background:var(--card); border:1px solid var(--line); border-radius:6px;">
     <label for="apiKeyInput" style="display:block; font-size:12.5px; color:var(--ink-soft); margin-bottom:6px;">
-      Gemini API 金鑰 — 免費申請：
+      Gemini API 金鑰（僅存在你自己的瀏覽器裡，不會上傳到任何地方）— 免費申請：
       <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" style="color:var(--indigo);">aistudio.google.com/apikey</a>
     </label>
     <div style="display:flex; gap:8px;">
@@ -692,9 +694,12 @@ async function analyzeVocab(text){
 ${trimmed}
 """
 
-請找出當中所有值得學習的單字，包含：
+請找出當中所有值得學習的單字，不限漢字或片假名，任何詞性、任何寫法只要是一個「單字」都要收錄，包含：
 1. 所有包含至少一個漢字的單字
 2. 所有片假名單字（外來語等，不含漢字也要列出）
+3. 所有純平假名寫成、但本身是一個有意義單字的詞（例如かくれんぼ、ひとり、なんて這類，不含漢字也要列出）
+
+唯一例外：單獨一個的助詞（は、が、を、に、で、と、も、の、から、まで、って…）本身不算單字，不要收錄；但如果它是單字的一部分（例如「ひとりにしないで」中的「ひとり」)，還是要收錄該單字本身。
 
 嚴格規則（非常重要）：
 - word 欄位必須是該詞「在原文中實際出現的完整寫法」，動詞、形容詞等有活用語尾（送り仮名）的詞，一定要連同語尾一起保留，絕對不可以只截取漢字語幹。
@@ -706,7 +711,7 @@ ${trimmed}
 - 「依照在原文中第一次出現的先後順序」排列成 JSON 陣列（不要按照50音或其他方式重新排序）。
 
 每個項目格式如下：
-{"word": "該詞在原文中實際出現的完整寫法（含送り仮名）", "reading": "平假名讀音（若本身是片假名詞則填該片假名）", "meaning": "繁體中文釋義（簡短，5-12字）", "context": "原文中以換行符號分隔的那「一行」，只能是該詞所在的那一行本身，不可以跨行合併、不可以包含前後其他行（含漢字/假名，不要翻譯）", "count": 該詞在文中出現的次數}`;
+{"word": "該詞在原文中實際出現的完整寫法（含送り仮名）", "reading": "平假名讀音（若本身已是平假名或片假名則與 word 相同）", "meaning": "繁體中文釋義（簡短，5-12字）", "context": "原文中以換行符號分隔的那「一行」，只能是該詞所在的那一行本身，不可以跨行合併、不可以包含前後其他行（含漢字/假名，不要翻譯）", "count": 該詞在文中出現的次數}`;
 
   const key = getKey();
   const model = getModel();
@@ -772,7 +777,8 @@ function renderResults(filename, vocab){
   cardsEl.innerHTML = '';
   vocab.forEach(v => {
     const hasKanji = /[\u4E00-\u9FFF]/.test(v.word || '');
-    const tag = hasKanji ? '漢' : '外來語';
+    const hasKatakana = /[\u30A0-\u30FF]/.test(v.word || '');
+    const tag = hasKanji ? '漢' : (hasKatakana ? '外來語' : '假名');
     const showReading = v.reading && v.reading !== v.word;
     const freq = v.count && v.count > 1;
 
@@ -820,5 +826,6 @@ function escapeHtml(s){
   return d.innerHTML;
 }
 </script>
+
 </body>
 </html>
